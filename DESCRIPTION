@@ -1,0 +1,35 @@
+Package: APTSCausalInference
+Type: Package
+Title: Practicals for the APTS Module "Causal learning" 2023 (V Didelez)
+Version: 1.0.0
+Author: Authors@R: 
+    c(person(given = "Ronja",
+             family = "Foraita",
+             role = c("aut", "cre"),
+             email = "foraita@leibniz-bips.de"),
+      person(given = "Vanessa",
+             family = "Didelez",
+             role = c("aut"),
+             email = "didelez@leibniz-bips.de")
+Maintainer: R Foraita <foraita@leibniz-bips.de>
+Description: Installs all necessary packages and provides R codes for the practicals.
+Depends: R (>= 4.0.0)
+Imports:
+  AIPW,
+  cobalt,  
+  data.table,
+  ipw,
+  sandwich,
+  stdReg,
+  SuperLearner,
+  survey,
+  tidyverse
+URL: https://github.com/bips-hb/ATP_Causal_Inference
+VignetteBuilder: knitr
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Suggests: 
+    rmarkdown,
+    knitr
