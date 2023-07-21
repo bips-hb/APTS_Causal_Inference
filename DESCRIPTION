@@ -16,10 +16,8 @@ Description: Installs all necessary packages and provides R codes for the practi
 Depends: R (>= 4.0.0)
 Imports:
   AIPW,
-  BiocManager,
   cobalt,  
   data.table,
-  GeneralisedCovarianceMeasure,
   ipw,
   sandwich,
   stdReg,

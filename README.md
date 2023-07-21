@@ -16,7 +16,7 @@ remotes::install_github("bips-hb/APTS_Causal_Inference", build_vignettes = TRUE)
 # update all packages 
 # building the vignettes will aso take a while....
 
-library(APTS_Causal_Inference)
+library(APTSCausalInference)
 #install_the_rest()              # this takes again a few minutes
 ```
 
