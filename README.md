@@ -10,14 +10,21 @@ Use R4.0.0 or higher.
 Install the package `remotes` from CRAN. Then run the following commands:
 
 ```R
+# during installation: update all packages!!!
 install.packages("remotes")
-remotes::install_github("bips-hb/APTS_Causal_Inference", build_vignettes = TRUE)
+remotes::install_github("bips-hb/APTS_Causal_Inference")
 
-# update all packages 
-# building the vignettes will aso take a while....
-
+# load package
 library(APTSCausalInference)
-#install_the_rest()              # this takes again a few minutes
+
+# Load the data
+data(bcrot)
+
+# Build the vignette which contains the solutions of the practicals (will be made available during the course)
+remotes::install_github("bips-hb/APTS_Causal_Inference", build_vignettes = TRUE)
+vignette("APTS", pacakge = "APTSCausalInference")
+
 ```
+
 
 

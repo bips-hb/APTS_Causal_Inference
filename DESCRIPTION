@@ -18,12 +18,13 @@ Imports:
   AIPW,
   cobalt,  
   data.table,
+  dplyr,
+  ggplot2,
   ipw,
   sandwich,
   stdReg,
   SuperLearner,
-  survey,
-  tidyverse
+  survey
 URL: https://github.com/bips-hb/ATP_Causal_Inference
 VignetteBuilder: knitr
 License: GPL-3
