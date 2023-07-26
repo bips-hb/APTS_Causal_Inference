@@ -7,10 +7,12 @@ Use R4.0.0 or higher.
 **Windows users, please make sure that rtools is installed on your computer!** 
 (https://cran.r-project.org/bin/windows/Rtools/)
 
-Install the package `remotes` from CRAN. Then run the following commands:
+Install the package `remotes` from CRAN. Then run the following commands to install
+these repository as package in R. The R package _APTSCausalInference_ installs
+all necessary packages for the practicals and builds the vignette (solution for the practicals):
 
 ```R
-# during installation: update all packages!!!
+# during installation: plz update all packages!!!
 install.packages("remotes")
 remotes::install_github("bips-hb/APTS_Causal_Inference")
 
@@ -25,6 +27,4 @@ remotes::install_github("bips-hb/APTS_Causal_Inference", build_vignettes = TRUE)
 vignette("APTS", pacakge = "APTSCausalInference")
 
 ```
-
-
 

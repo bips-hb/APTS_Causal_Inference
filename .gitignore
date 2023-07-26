@@ -40,6 +40,7 @@ vignettes/*.pdf
 .Renviron
 .Rbuildignore
 
+
 # pkgdown site
 docs/
 
