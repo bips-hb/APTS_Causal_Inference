@@ -1,0 +1,36 @@
+---
+title: "Causal Inference"
+author: "V Didelez, R Foraita"
+date: "01 08 2023"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Causal Inference}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  eval = TRUE,
+  collapse = TRUE,
+  fig.width = 6)
+```
+
+## Load packages
+```{r, warning=FALSE, message=FALSE}
+library(APTSCausalInference)
+# required for data management and plots
+library(data.table)
+library(dplyr)
+library(ggplot2)
+
+# required for analysis
+library(AIPW)
+library(cobalt)
+library(ipw)
+library(sandwich)
+library(stdReg)
+library(SuperLearner)
+library(survey)
+```
