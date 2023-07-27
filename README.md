@@ -29,6 +29,6 @@ the package again and open the corresponding vignette with the following command
 ```R
 # Build the vignette which contains the solutions of the practicals (will be made available during the course)
 remotes::install_github("bips-hb/APTS_Causal_Inference", build_vignettes = TRUE)
-vignette("APTS", pacakge = "APTSCausalInference")
+vignette("APTS", package = "APTSCausalInference")
 ```
 
