@@ -1,4 +1,4 @@
-# Practicals for the APTS Module "Causal Inference" 2023 (V Didelez)
+# Practicals for the APTS Module "Causal Inference" 2023 (V. Didelez and R.J. Evans)
 
 Practicals for the Module "Causal Inference" at the Academy for PhD Training in Statistics (https://warwick.ac.uk/fac/sci/statistics/apts/programme/causinf/)
 
@@ -23,8 +23,9 @@ library(APTSCausalInference)
 data(bcrot)
 ```
 
-The solutions of the practicals will be provided in the course. It is then best to install 
-the package again and open the corresponding vignette with the following command:
+The solutions of the practicals will be provided during the course. It is then 
+best to install the package again and open the corresponding vignette with the 
+following command:
 
 ```R
 # Build the vignette which contains the solutions of the practicals (will be made available during the course)
