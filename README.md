@@ -3,6 +3,9 @@
 Practicals for the Module "Causal Inference" at the Academy for PhD Training in Statistics (https://warwick.ac.uk/fac/sci/statistics/apts/programme/causinf/)
 
 ## Installation
+
+For APTS we recommend using the Codespace set up by Louis Aslett for the Machine Learning module.  
+
 Use R4.0.0 or higher. 
 **Windows users, please make sure that rtools is installed on your computer!** 
 (https://cran.r-project.org/bin/windows/Rtools/)
