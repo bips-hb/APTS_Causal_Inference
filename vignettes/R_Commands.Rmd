@@ -1,0 +1,120 @@
+---
+title: "R Commands"
+author: "Robin Evans"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# R Commands
+
+This document contains some example code blocks, that can be used with the
+exercise on the `bcrot` dataset.
+
+## Plotting
+
+The below gives histograms comparing quality of life under hormone treatment 
+and control.
+
+```{r eval=FALSE}
+plot.qol <- ggplot(bcrot, aes(x=qol, after_stat(density)), fill=as.factor(hormon)) +
+    geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 2) +
+    facet_grid(as.factor(hormon) ~ .) +
+    labs(x = "Quality of life", y = "Density") +
+    scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                      name="Hormonal\ntreatment",
+                      breaks=c("0", "1"),
+                      labels=c("no", "yes")) +
+    theme_light()
+plot.qol
+```
+
+This gives a density plot for the proposensity score (`ps`).
+
+```{r eval=FALSE}
+# plot density
+ggplot(bcrot, aes(ps, fill = as.factor(hormon))) +
+  geom_density(alpha = 0.5) +
+  labs(x = "Propensity score",
+       y = "Density",
+       fill = "Hormone\ntreatment") +
+  scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                    name="Hormonal\ntreatment",
+                    breaks=c("0", "1"),
+                    labels=c("no", "yes")) +
+  theme_light()
+```
+
+## Love Plots
+
+Love plots can be obtained with the command `cobalt::love.plot`.  Make sure you 
+put in the right entry for the right-hand side of the formula, and for the 
+`data` argument!
+
+```{r love_plot, eval=FALSE}
+cobalt::love.plot(hormon_i ~ XXX , 
+                  data =  XXX  , 
+                  weights = bcrot$w,
+                  s.d.denom = "pooled",
+                  thresholds = c(m = .1))
+```
+
+## Subsetting and Filtering
+
+```{r dplyr, eval=FALSE}
+# restrict dataset and transformation
+bcrot2 <- bcrot %>% filter(age >= 40,      # keep only individuals over 40
+                           XXX) %>%   # XXXX FILL IN! w/>= 1 cancerous node
+                    mutate(age2 = age * age) %>%    # add age²
+                    select(-c(ps, w))      # drop propensity score and weights
+```
+
+
+## Regression Standardization
+
+```{r stdReg, eval=FALSE}
+fit <- glm(qol ~ hormon*age + XXXX,  ## fill in other variables!
+           data = bcrot2)
+fit.std <- stdGlm(fit = fit, data = as.data.frame(bcrot2), X = "hormon")
+print(summary(fit.std))
+plot(fit.std)
+
+# Confidence interval: Mean difference 
+summary(fit.std, contrast = "difference", reference = "0")
+```
+
+## AIPW
+
+```{r AIPW, eval=FALSE}
+# Build SuperLearner libraries for outcome (Q) and exposure models (g)
+sl.lib <- c("SL.mean","SL.glm")  
+
+# Construct an aipw object for later estimations 
+AIPW_SL <- AIPW::AIPW$new(Y = bcrot2$qol,
+                          A = bcrot2$hormon_i,
+                          W = subset(bcrot2, select = c(XXX)),   # fill in!
+                          Q.SL.library = sl.lib,
+                          g.SL.library = sl.lib,
+                          k_split = 10,
+                          verbose = TRUE)
+
+# Fit the data to the AIPW object and check the balance of propensity scores
+raipw <- AIPW_SL$fit()$summary()
+AIPW_SL$fit()$plot.p_score()$plot.ip_weights()
+
+# Truncate weights (default truncation is set to 0.025)
+AIPW_SL$fit()$summary(g.bound = c(0.05, 0.95))$plot.p_score()$plot.ip_weights()
+
+# Calculate average treatment effects among the treated/untreated (controls) (ATT/ATC)
+AIPW_SL$stratified_fit()$summary()
+
+
+# extract weights for loveplots
+# AIPW_SL$plot.ip_weights()
+bcrot2$aipw <- AIPW_SL$ip_weights.plot$data$ip_weights
+```
