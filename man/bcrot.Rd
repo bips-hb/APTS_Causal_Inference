@@ -5,7 +5,7 @@
 \alias{bcrot}
 \title{Rotterdam data set on breast cancer}
 \format{
-A A data frame with 2982 observations on the following 6 variables:
+A data frame with 2982 observations on the following 6 variables:
 \describe{
   \item{hormon}{hormonal treatment (0=no, 1=yes)}
   \item{age}{age at diagnosis}
@@ -22,7 +22,7 @@ A A data frame with 2982 observations on the following 6 variables:
 data(bcrot)
 }
 \description{
-The rotterdam data set includes 2982 primary breast cancers patients whose
+The Rotterdam data set includes 2982 primary breast cancers patients whose
 data whose records were included in the Rotterdam tumor bank. We generated
 the synthetic outcome ‘qol’ (health related quality of life, continuous measure)
 based on the existing data.
