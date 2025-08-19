@@ -16,12 +16,19 @@ knitr::opts_chunk$set(echo = TRUE)
 This document contains some example code blocks, that can be used with the
 exercise on the `bcrot` dataset.
 
+```{r load}
+library(APTSCausalInference)
+library(ggplot2)
+data(bcrot)
+```
+
+
 ## Plotting
 
 The below gives histograms comparing quality of life under hormone treatment 
 and control.
 
-```{r eval=FALSE}
+```{r plotqol, eval = FALSE}
 plot.qol <- ggplot(bcrot, aes(x=qol, after_stat(density)), fill=as.factor(hormon)) +
     geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 2) +
     facet_grid(as.factor(hormon) ~ .) +
@@ -36,7 +43,7 @@ plot.qol
 
 This gives a density plot for the proposensity score (`ps`).
 
-```{r eval=FALSE}
+```{r density, eval=FALSE}
 # plot density
 ggplot(bcrot, aes(ps, fill = as.factor(hormon))) +
   geom_density(alpha = 0.5) +

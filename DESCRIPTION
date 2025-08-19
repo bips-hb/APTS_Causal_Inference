@@ -1,6 +1,6 @@
 Package: APTSCausalInference
 Type: Package
-Title: Practicals for the APTS Module "Causal Inference" 2023 (V. Didelez and R.J. Evans)
+Title: Practicals for the APTS Module "Causal Inference" 2025 (V. Didelez and R.J. Evans)
 Version: 1.1.0
 Author: Authors@R: 
     c(person(given = "Ronja",

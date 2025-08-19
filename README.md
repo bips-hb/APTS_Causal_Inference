@@ -1,6 +1,7 @@
-# Practicals for the APTS Module "Causal Inference" 2024 (V. Didelez and R.J. Evans)
+# Practicals for the APTS Module "Causal Inference" 2025 (V. Didelez and R.J. Evans)
 
-Practicals for the Module "Causal Inference" at the Academy for PhD Training in Statistics (https://warwick.ac.uk/fac/sci/statistics/apts/programme/causinf/)
+Practicals for the Module "Causal Inference" at the Academy for PhD Training in Statistics 
+(https://warwick.ac.uk/fac/sci/statistics/apts/programme/causinf/)
 
 ## Installation
 
