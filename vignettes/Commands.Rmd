@@ -1,27 +1,32 @@
 ---
-title: "R Commands"
+title: "R Commands for Causal Inference"
 author: "Robin Evans"
 date: "`r Sys.Date()`"
-output:
-  html_document:
-    df_print: paged
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{R Commands for Causal Inference}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
+
 
 # R Commands
 
 This document contains some example code blocks, that can be used with the
 exercise on the `bcrot` dataset.
 
-```{r load}
+```{r setup}
 library(APTSCausalInference)
 library(ggplot2)
 data(bcrot)
 ```
-
 
 ## Plotting
 
@@ -40,7 +45,6 @@ plot.qol <- ggplot(bcrot, aes(x=qol, after_stat(density)), fill=as.factor(hormon
     theme_light()
 plot.qol
 ```
-
 This gives a density plot for the proposensity score (`ps`).
 
 ```{r density, eval=FALSE}

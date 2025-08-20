@@ -17,8 +17,8 @@ all necessary packages for the practicals and builds the vignette (solution for 
 
 ```R
 # during installation: plz update all packages!!!
-install.packages("remotes")
-remotes::install_github("bips-hb/APTS_Causal_Inference")
+install.packages("pak")
+pak::pkg_install("bips-hb/APTS_Causal_Inference")
 
 # load package
 library(APTSCausalInference)
@@ -34,6 +34,6 @@ following command:
 ```R
 # Build the vignette which contains the solutions of the practicals (will be made available during the course)
 remotes::install_github("bips-hb/APTS_Causal_Inference", build_vignettes = TRUE)
-vignette("APTS", package = "APTSCausalInference")
+vignette("Commands", package = "APTSCausalInference")
 ```
 
