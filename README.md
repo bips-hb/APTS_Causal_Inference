@@ -18,6 +18,7 @@ all necessary packages for the practicals and builds the vignette (solution for 
 ```R
 # during installation: plz update all packages!!!
 install.packages("pak")
+options(pkg.build_vignettes = TRUE) # important to build the vignette
 pak::pkg_install("bips-hb/APTS_Causal_Inference")
 
 # load package
@@ -27,13 +28,15 @@ library(APTSCausalInference)
 data(bcrot)
 ```
 
-The solutions of the practicals will be provided during the course. It is then 
-best to install the package again and open the corresponding vignette with the 
-following command:
+For solving the practical exercises in this course, we created a vignette that 
+serves as a hands-on guide. It contains typical R commands for conducting causal inference, 
+providing participants with code snippets that support understanding and 
+application of the discussed methods.
+
+The solutions of the practicals will be provided during the course. 
 
 ```R
-# Build the vignette which contains the solutions of the practicals (will be made available during the course)
-remotes::install_github("bips-hb/APTS_Causal_Inference", build_vignettes = TRUE)
-vignette("Commands", package = "APTSCausalInference")
+utils::vignette("Commands", package = "APTSCausalInference")
+# or click in RStudio 'View -> Show Packages -> APTSCausalInference -> User guides, package vignettes ...'
 ```
 
