@@ -1,0 +1,103 @@
+---
+title: "Installation: Step-by-step"
+author: "Ronja Foraita"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Installation: Step-by-step}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## **How to install: Step-by-step**
+
+### **Scenario 1: You have a GitHub account**
+
+**1. Generate a Personal Access Token (PAT)**
+
+ + Go to **[GitHub → Settings → Developer Settings → Personal Access Tokens → Tokens (classic)]**.
+ + Click **"Generate new token"**.
+ + Give it a name (e.g., `R Pak Token`).
+ + Select scopes:
+   - For most R packages: `repo` and `read:packages` are enough.
+ + Click **Generate token**.
+ + **Copy the token** immediately — you won’t see it again.
+
+**2. Set the PAT in R temporarily**
+  This works for the current R session:
+```R
+ Sys.setenv(GITHUB_PAT = "your_personal_access_token_here")
+```
+
+
+**3. Set the PAT permanently**
+
+```R
+ install.packages("usethis")  # if not already installed
+ usethis::edit_r_environ()`
+```
+
+  + This opens the `.Renviron` file.
+  + Add a line:
+
+```R
+GITHUB_PAT=your_personal_access_token_here
+```
+
+  + Save the file and restart R.
+  + Now all GitHub installs will automatically use this PAT.
+
+**4. Install packages from GitHub**
+
+```R
+# during installation: plz update all packages!!!
+install.packages("pak")
+options(pkg.build_vignettes = TRUE) # important to build the vignette
+pak::pkg_install("bips-hb/APTS_Causal_Inference")
+
+# load package
+library(APTSCausalInference)
+
+# Load the data
+data(bcrot)
+```
+
+
+### **Scenario 2: You do NOT have a GitHub account**
+
+If you do not have a GitHub account, then **download** the package manually
+
+  + Go to the package’s GitHub page.
+  + **Click Code → Download ZIP**.
+  + Unzip the folder.
+
+In R (**change path!!!!**):
+```R
+setwd("path/to/APTS_Causal_Inference/")
+
+install.packages("pak")
+options(pkg.build_vignettes = TRUE) # important to build the vignette
+pak::local_install("path/to/APTS_Causal_Inference/APTSCausalInference_1.1.0.tar.gz")
+
+# or
+install.packages("path/to/APTS_Causal_Inference/APTSCausalInference_1.1.0.tar.gz", 
+   repos = NULL, type = "source")
+ 
+# load package
+library(APTSCausalInference)
+
+# Load the data
+data(bcrot)
+```
+
+This installs the package without needing GitHub credentials.
+  
+

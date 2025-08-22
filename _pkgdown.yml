@@ -1,0 +1,6 @@
+# _pkgdown.yml
+title: "APTSCausalInference"
+url: https://APTS.github.io/APTSCausalInference/
+
+template:
+  bootstrap: 5

@@ -1,6 +1,6 @@
 Package: APTSCausalInference
 Type: Package
-Title: Practicals for the APTS Module "Causal Inference" 2025 (V. Didelez and R.J. Evans)
+Title: Practicals for the APTS Module "Causal Inference" 2025 (V. Didelez, R.J. Evans and K. Diaz-Ordaz)
 Version: 1.1.0
 Author: Authors@R: 
     c(person(given = "Ronja",
@@ -14,7 +14,12 @@ Author: Authors@R:
       person(given = "Robin",
              family = "Evans",
              role = c("aut"),
-             email = "evans@stats.ox.ac.uk"))
+             email = "evans@stats.ox.ac.uk"),
+      person(given = "Karla",
+             family = "Diaz-Ordaz",
+             role = c("aut"),
+             email = "karla.diaz-ordaz@ucl.ac.uk"),             
+             )
 Maintainer: R Foraita <foraita@leibniz-bips.de>
 Description: Installs all necessary packages and provides R codes for the practicals.
 Depends: R (>= 4.0.0)
