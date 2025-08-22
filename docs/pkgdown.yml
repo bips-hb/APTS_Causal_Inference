@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   Commands: Commands.html
   installation: installation.html
-last_built: 2025-08-22T13:26Z
+last_built: 2025-08-22T13:58Z
 urls:
   reference: https://APTS.github.io/APTSCausalInference/reference
   article: https://APTS.github.io/APTSCausalInference/articles

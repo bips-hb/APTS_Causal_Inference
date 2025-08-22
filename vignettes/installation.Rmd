@@ -70,6 +70,7 @@ library(APTSCausalInference)
 data(bcrot)
 ```
 
+---
 
 ### **Scenario 2: You do NOT have a GitHub account**
 
