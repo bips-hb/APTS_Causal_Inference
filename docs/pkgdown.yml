@@ -1,10 +1,10 @@
-pandoc: '3.2'
+pandoc: '3.4'
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   Commands: Commands.html
   installation: installation.html
-last_built: 2025-08-22T13:58Z
+last_built: 2025-08-29T08:56Z
 urls:
-  reference: https://APTS.github.io/APTSCausalInference/reference
-  article: https://APTS.github.io/APTSCausalInference/articles
+  reference: https://bips-hb.github.io/APTS_Causal_Inference/reference
+  article: https://bips-hb.github.io/APTS_Causal_Inference/articles
