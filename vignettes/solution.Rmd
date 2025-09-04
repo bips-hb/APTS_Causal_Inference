@@ -1,0 +1,405 @@
+---
+title: "Causal Inference"
+author: "V Didelez, R Foraita"
+date: "19 08 2025"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Causal Inference}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  eval = TRUE,
+  collapse = TRUE,
+  fig.width = 6)
+```
+
+## Load packages
+```{r, warning=FALSE, message=FALSE}
+library(APTSCausalInference)
+# required for data management and plots
+library(data.table)
+library(dplyr)
+library(ggplot2)
+
+# required for analysis
+library(AIPW)
+library(cobalt)
+library(ipw)
+library(sandwich)
+library(stdReg)
+library(SuperLearner)
+library(survey)
+```
+## Load the Rotterdam Breast Cancer data set
+```{r load data}
+# data(bcrot)
+load("../data/bcrot.RData")
+```
+
+## Descriptive Analysis
+Compare descriptively QOL for those who do and do not take hormonal therapy 
+
+```{r descriptives}
+# qol ~ hormon
+plot.qol <- ggplot(bcrot, aes(x=qol, after_stat(density)), fill=as.factor(hormon)) +
+    geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 2) +
+    facet_grid(as.factor(hormon) ~ .) +
+    labs(x = "Quality of life", y = "Density") +
+    scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                      name="Hormonal\ntreatment",
+                      breaks=c("0", "1"),
+                      labels=c("no", "yes")) +
+    theme_light()
+plot.qol
+
+
+# age ~ hormon
+plot.age <- ggplot(bcrot, aes(x=age, after_stat(density)), fill=as.factor(hormon)) +
+    geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 2) +
+    facet_grid(as.factor(hormon) ~ .) +
+    labs(x = "Age", y = "Density") +
+    scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                      name="Hormonal\ntreatment",
+                      breaks=c("0", "1"),
+                      labels=c("no", "yes")) +
+    theme_light()
+plot.age
+
+
+# Lymph nodes ~ hormon
+plot.nodes <- ggplot(bcrot, aes(x=nodes, after_stat(density)), fill=as.factor(hormon)) +
+    geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 1) +
+    facet_grid(as.factor(hormon) ~ .) +
+    labs(x = "Number of positive lymph nodes", y = "Density") +
+    scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                      name="Hormonal\ntreatment",
+                      breaks=c("0", "1"),
+                      labels=c("no", "yes")) +
+    theme_light()
+plot.nodes
+
+ggplot(bcrot, aes(x=enodes, after_stat(density)), fill=as.factor(hormon)) +
+  geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 0.1) +
+  facet_grid(as.factor(hormon) ~ .) +
+  labs(x = "Number of positive lymph nodes (transformed: exp(-0.12 * nodes))", 
+       y = "Density") +
+  scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                    name="Hormonal\ntreatment",
+                    breaks=c("0", "1"),
+                    labels=c("no", "yes")) +
+  theme_light()
+
+
+# PgR (fmol/l), log ~ hormon
+ggplot(bcrot, aes(x=pr_1, after_stat(density)), fill=as.factor(hormon)) +
+  geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 0.5) +
+  facet_grid(as.factor(hormon) ~ .) +
+  labs(x = "PgR [fmol/l] (transformed: log(pr)", y = "Density") +
+  scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                    name="Hormonal\ntreatment",
+                    breaks=c("0", "1"),
+                    labels=c("no", "yes")) +
+  theme_light()
+
+```
+
+## Analysis
+### Linear Model
+We compare an unadjusted naive linear model (2-groups) with a naive adjusted main-effects-only model (this is too simplistic to be plausible; and it is not robust). We can see that the unadjusted analysis is (likely) very biased - the effect reverses upon adjustment. Note that the analysis does not alert us to any positivity issues as it simply extrapolates.
+```{r linear model unadjusted}
+# Unadjusted linear regression
+lm.ua <- lm(qol ~ hormon, data = bcrot)
+summary(lm.ua)
+
+```
+
+```{r linear model adjusted}
+# Main-effects linear regression
+lm.a <- lm(qol ~ hormon + age + enodes + pr_1, data = bcrot)
+summary(lm.a)
+
+```
+### Propensity score (PS)
+We saw that positivity is an issue with nodes=0 and younger ages. Here we look at how to detect this from the propensity score (PS). We begin with a simple main-effects-only PS model.
+```{r, echo = TRUE}
+ps <- glm(hormon ~ age + enodes + pr_1, 
+          data = bcrot, 
+          family = binomial(link="logit"))
+
+# add fitted values to data set
+bcrot$ps <- fitted(ps)
+
+# plot density
+ggplot(bcrot, aes(ps, fill = as.factor(hormon))) +
+  geom_density(alpha = 0.5) +
+  labs(x = "Propensity score",
+       y = "Density",
+       fill = "Hormone\ntreatment") +
+  scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                    name="Hormonal\ntreatment",
+                    breaks=c("0", "1"),
+                    labels=c("no", "yes")) +
+  theme_light()
+ 
+ 
+# Histogram
+ggplot(data = bcrot, aes(x = ps, after_stat(density), fill = as.factor(hormon))) +
+  #geom_histogram(alpha = 0.5, position = "identity", binwidth = 0.05) +
+  geom_histogram(aes(fill=as.factor(hormon)), color=c("#e9ecef"), binwidth = 0.05) +
+  facet_grid(hormon ~ .) +
+  labs(x = "Propensity score", y = "Density") +
+  scale_fill_manual(values=c("#69b3a2", "#337CA0"),
+                    name="Hormonal\ntreatment",
+                    breaks=c("0", "1"),
+                    labels=c("no", "yes")) +
+  theme_light()
+```
+
+### Inverse Probability Treatment Weighting 
+We also find that we have some extreme weights (though, I have seen worse). The weighted data does not achieve balance in age and enodes; this could be due to lack of positivity and/or because the PS model is bad.
+```{r IPTW}
+bcrot$w <- (as.numeric(as.character(bcrot$hormon)) / bcrot$ps) + 
+           ((1 - as.numeric(as.character(bcrot$hormon))) / (1 - bcrot$ps))
+summary(bcrot$w)
+
+# Plot inverse probability weights vs. index
+ggplot(bcrot, aes(x = 1:nrow(bcrot), y = w)) + 
+  geom_point()  +
+  xlab(" ") +
+  ylab(" ") + 
+  ylim(0, 65) +
+  theme_minimal()
+
+
+# Covariate balance plot (love plot - named after Thomas E. Love)
+cobalt::love.plot(hormon ~ age + enodes + pr_1, 
+                  data = bcrot, 
+                  weights = bcrot$w,
+                  s.d.denom = "pooled",
+                  thresholds = c(m = .1))
+
+```
+
+
+### Use subset
+We decide that the effect is ill-defined for nodes=0 and age<40; thus we create a more meaningful subset of the population for which to compare treatment with no-treatment. Note that we lose more than half (ca. 1500) of the untreated, but only 7 of the treated patients.
+```{r subset}
+plot.age
+plot.nodes
+
+# restrict dataset and transformation
+bcrot2 <- bcrot %>% filter(age >= 40,
+                           nodes > 0) %>%
+                    mutate(age.2 = age * age) %>%    # add age²
+                    select(-c(ps, w))  
+
+table(bcrot2$hormon)
+table(bcrot$hormon)
+
+
+# Main-effects and adjustes linear regression models using the subset
+lm.ua2 <- lm(qol ~ hormon, data = bcrot2)
+summary(lm.ua2)
+lm.a2 <- lm(qol ~ hormon + age + enodes + pr_1, data = bcrot2)
+summary(lm.a2)
+```
+
+
+### Estimate Marginal structural model "by hand"
+First fit new more complex PS model (as we did not achieve balance earlier) and check balance. Next fit MSM by weighted lm; note the underestimated standard errors! Obtain valid SEs by sandwich estimation.
+
+```{r MSM by hand}
+ps <- glm(hormon ~ age + age.2 + enodes + age*pr_1,
+          data = bcrot2, 
+          family = binomial(link="logit"))
+bcrot2$ps <- fitted(ps)
+bcrot2$w <- (as.numeric(as.character(bcrot2$hormon)) / bcrot2$ps) + 
+           ((1 - as.numeric(as.character(bcrot2$hormon))) / (1 - bcrot2$ps))
+
+# Checking balance
+cobalt::love.plot(hormon ~ age + age.2 + enodes + age*pr_1, 
+                  data = bcrot2, 
+                  weights = bcrot2$w,
+                  s.d.denom = "pooled",
+                  thresholds = c(m = .1))
+
+cobalt::bal.plot(ps, "pr_1", which = "both", colors = c("#69b3a2", "#337CA0"), data=bcrot2)
+cobalt::bal.plot(ps, "age", which = "both", colors = c("#69b3a2", "#337CA0"), data=bcrot2)
+cobalt::bal.plot(ps, "enodes", which = "both", colors = c("#69b3a2", "#337CA0"), data=bcrot2)
+
+
+# Weights based on ~age + age.2 + enodes + age*pr_1
+model_w <- lm(qol ~ hormon , weights = w, data = bcrot2)
+summary(model_w)
+
+# Variance estimation using the robust sandwich variance estimator
+(sandwich_se <- diag(sandwich::vcovHC(model_w, type = "HC"))^0.5)
+# confidence interval
+sandwichCI <- c(coef(model_w)[2] - 1.96 * sandwich_se[2],
+                      coef(model_w)[2] + 1.96 * sandwich_se[2])
+```
+
+
+### Estimate Marginal structural model using the IPW package
+With package `ipw` can do the whole MSM in one. Also has an inbuilt plot for checking weights distribution.
+
+```{r MSM IPW}
+ipw2 <- ipw::ipwpoint(exposure = hormon, 
+                      family = "binomial", link = "logit",
+                      denominator = ~ age + age.2 + enodes + age*pr_1,
+                      data = bcrot2)
+bcrot2$ipw <- ipw2$ipw.weights
+
+# Plot Inverse Probability Weights
+summary(ipw2$ipw.weights)
+ipw::ipwplot(weights = ipw2$ipw.weights, 
+             logscale = FALSE,
+             main = "Stabilized weights", 
+             xlab = "Weights",
+             xlim = c(1, 10))
+
+# Marginal structural model for the causal effect of hormon on qol
+# corrected for confounding using inverse probability weighting
+# with robust standard error from the survey package.
+model_sm2 <- survey::svyglm(qol ~ hormon,
+                            design = svydesign(~ 1, 
+                                               weights = ~ipw,
+                                               data = bcrot2))
+summary(model_sm2)
+confint(model_sm2)
+```
+
+
+### Compare confidence intervals
+```{r ci}
+msm.out <- rbind(cbind(coef(model_w), confint(model_w))[2,],
+                 c(coef(model_w)[2], sandwichCI),
+                 cbind(coef(model_sm2), confint(model_sm2))[2,])
+dimnames(msm.out) <- list(c("MSM, naive", "MSM, robust SE (sandwich):","MSM, robust SE (ipw):"), 
+                          c("est", colnames(msm.out)[2:3]))
+msm.out
+```
+
+
+
+### Investigate (extreme) weights - truncation?
+```{r extreme weights}
+# truncate weights
+wq <- quantile(bcrot2$ipw, probs = c(0.025, 0.975)) 
+bcrot2$wt <- if_else(bcrot2$ipw < wq[1], wq[1], bcrot2$ipw)
+bcrot2$wt <- if_else(bcrot2$wt  > wq[2], wq[2], bcrot2$wt)
+
+summary(bcrot2$ipw)
+summary(bcrot2$wt)
+
+# Plot weight vs. index without and with truncation
+ggplot(bcrot2, aes(x = 1:nrow(bcrot2), y = ipw)) + 
+  geom_point()  +
+  xlab(" ") +
+  ylab(" ") + 
+  ylim(0, 65) +
+  labs(title = "Not truncated") +
+  theme_minimal()
+
+ggplot(bcrot2, aes(x = 1:nrow(bcrot2), y = wt)) + 
+  geom_point()  +
+  xlab(" ") +
+  ylab(" ") + 
+  ylim(0, 10) +
+  labs(title="Truncated weights") + 
+  theme_minimal()
+
+
+# loveplot without and with truncation
+# truncation loses some balance - no real need for truncation here
+cobalt::love.plot(hormon ~ age + age.2 + enodes + age*pr_1, 
+                     data = bcrot2, 
+                     weights = bcrot2$ipw,
+                     s.d.denom = "pooled",
+                     thresholds = c(m = .1),
+                     title = "Not truncated"
+                     )
+
+cobalt::love.plot(hormon ~ age + age.2 + enodes + age*pr_1, 
+                      data = bcrot2, 
+                      weights = bcrot2$wt,
+                      s.d.denom = "pooled",
+                      thresholds = c(m = .1),
+                      title = "Truncated weights")
+```
+
+
+
+### Regression standardization
+Using the correct outcoem model (known because we generated QoL from a known model), we estimate the population average effect (and its standard errors) by standardization with package stdReg.
+```{r regression standardization}
+fit <- glm(qol ~ hormon*age + hormon*age.2 + hormon*enodes + hormon*pr_1 + age*pr_1,
+           data = bcrot2)
+fit.std <- stdGlm(fit = fit, data = as.data.frame(bcrot2), X = "hormon")
+print(summary(fit.std))
+plot(fit.std)
+
+# Confidence interval: Mean difference 
+summary(fit.std, contrast = "difference", reference = "0")
+```
+
+
+
+### Double machine learning - Augmented Inverse Probability Weighting
+Here we use AIPW with some default settings. 
+```{r DML, warning=FALSE}
+# Build SuperLearner libraries for outcome (Q) and exposure models (g)
+sl.lib <- c("SL.mean","SL.glm")  
+
+# Construct an aipw object for later estimations 
+AIPW_SL <- AIPW::AIPW$new(Y = bcrot2$qol,
+                          A = as.integer(as.character(bcrot2$hormon)),
+                          W = subset(bcrot2, select = c("enodes", "age", "pr_1")), 
+                          Q.SL.library = sl.lib,
+                          g.SL.library = sl.lib,
+                          k_split = 10,
+                          verbose = TRUE)
+
+# Fit the data to the AIPW object and check the balance of propensity scores
+raipw <- AIPW_SL$fit()$summary()
+AIPW_SL$fit()$plot.p_score()$plot.ip_weights()
+
+# Truncate weights (default truncation is set to 0.025)
+AIPW_SL$fit()$summary(g.bound = c(0.05, 0.95))$plot.p_score()$plot.ip_weights()
+
+# Calculate average treatment effects among the treated/untreated (controls) (ATT/ATC)
+AIPW_SL$stratified_fit()$summary()
+
+
+# extract weights for loveplots
+# AIPW_SL$plot.ip_weights()
+bcrot2$aipw <- AIPW_SL$ip_weights.plot$data$ip_weights
+
+# loveplots + AIPW
+cobalt::love.plot(hormon ~ age*enodes*pr_1 + 
+                           age.2*enodes*pr_1, 
+                  data = bcrot2, 
+                  weights = bcrot2$aipw,
+                  s.d.denom = "pooled",
+                  thresholds = c(m = .1))
+```
+
+
+
+### Compare results in the restricted sample
+This is a summary of all the different methods - of these we know that regression standardization is correctly specified; we do not know this for any of the other methods; but we know the true effect for our synthetic QoL outcome. Note the much larger uncertainty for IPW.
+
+```{r comparison}
+out <- rbind(c(2.07, rep(NA,3)), 
+             c(coef(summary(lm.a2))[2,1:2], confint(lm.a2)[2,]),
+             c(summary(model_sm2)$coefficients[2,1:2], confint(model_sm2)[2,]),
+             summary(fit.std, contrast = "difference", reference = "0")$est.table[2,],
+             raipw$estimates$RD)
+dimnames(out) <- list(c("True ATE", "LM", "IPW", "RS", "AIPW"),
+                      c("Estimate", "SE", "lower", "upper"))
+print(round(out,3))
+```
