@@ -1,4 +1,4 @@
-# **Practicals for the APTS Module "Causal Inference" 2025** 
+# **Practicals for the APTS Module "Causal Inference" 2026** 
 **V. Didelez, R.J. Evans and K. Diaz-Ordaz**
 
 ---

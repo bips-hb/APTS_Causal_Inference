@@ -1,28 +1,37 @@
 Package: APTSCausalInference
 Type: Package
-Title: Practicals for the APTS Module "Causal Inference" 2025 (V. Didelez, R.J. Evans and K. Diaz-Ordaz)
-Version: 1.1.0
-Author: Authors@R: 
-    c(person(given = "Ronja",
-             family = "Foraita",
-             role = c("aut", "cre"),
-             email = "foraita@leibniz-bips.de"),
-      person(given = "Vanessa",
-             family = "Didelez",
-             role = c("aut"),
-             email = "didelez@leibniz-bips.de"),
-      person(given = "Robin",
-             family = "Evans",
-             role = c("aut"),
-             email = "evans@stats.ox.ac.uk"),
-      person(given = "Karla",
-             family = "Diaz-Ordaz",
-             role = c("aut"),
-             email = "karla.diaz-ordaz@ucl.ac.uk"),             
-             )
-Maintainer: R Foraita <foraita@leibniz-bips.de>
-Description: Installs all necessary packages and provides R codes for the practicals.
-Depends: R (>= 4.0.0)
+Title: Practicals for the APTS Module "Causal Inference" 2026 (V. Didelez, R.J. Evans and K. Diaz-Ordaz)
+Version: 1.1.1
+Authors@R:
+    c(
+      person(
+        given = "Vanessa",
+        family = "Didelez",
+        role = c("aut"),
+        email = "didelez@leibniz-bips.de"
+      ),
+      person(
+        given = "Robin",
+        family = "Evans",
+        role = c("aut"),
+        email = "evans@stats.ox.ac.uk"
+      ),
+      person(
+        given = "Karla",
+        family = "Diaz-Ordaz",
+        role = c("aut"),
+        email = "karla.diaz-ordaz@ucl.ac.uk"
+      ),
+      person(
+        given = "Ronja",
+        family = "Foraita",
+        role = c("aut", "cre"),
+        email = "foraita@leibniz-bips.de"
+      )
+    )
+Description: Installs all necessary packages and provides R code for the practicals.
+Depends:
+    R (>= 4.0.0)
 Imports:
   AIPW,
   cobalt,  
@@ -37,7 +46,7 @@ Imports:
   SuperLearner,
   survey
 URL: https://bips-hb.github.io/APTS_Causal_Inference/,
-     https://github.com/bips-hb/APTS_Causal_Inference
+     https://github.com/bips-hb/APTS_Causal_Inference    
 BugReports: https://github.com/bips-hb/APTS_Causal_Inference/issues
 VignetteBuilder: knitr
 License: GPL-3

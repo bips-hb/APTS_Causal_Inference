@@ -1,0 +1,118 @@
+# Installation: Step-by-step
+
+## **How to install: Step-by-step**
+
+**Important for Windows, macOS, and Linux**
+
+The instructions are the same on all three operating systems. You do not
+need to manually configure Git, SSH, environment variables at the
+operating-system level, or use OS-specific commands.
+
+### **Scenario 1: You have a GitHub account**
+
+Package installation from github requires authentification. If you have
+already installed a GitHub Personal Access Token (PAT), then go to
+subsection 3. Otherwise proceed as follows:
+
+**1. Generate a Personal Access Token (PAT)**
+
+- Go to **\[GitHub → Settings → Developer Settings → Personal Access
+  Tokens → Tokens (classic)\]**.
+- Click **“Generate new token (classic)”**.
+- Give the token a descriptive name (e.g., `R package installation`).
+- Select the required scopes:
+  - `repo` for accessing private repositories, and
+  - `read:packages`
+- Click **Generate token**.
+- **Copy the token** immediately and keep it somewhere secure — you
+  won’t see it again.
+
+**2. Configure the PAT in R** Install `usethis` if not already
+installed, and run:
+
+``` r
+
+ install.packages("usethis")  
+ usethis::edit_r_environ()
+```
+
+This opens your personal `.Renviron` file. Add the following line:
+
+``` r
+
+GITHUB_PAT=your_personal_access_token_here
+```
+
+Replace `your_personal_access_token_here` with your actual token. Save
+the file and **restart** RStudio.
+
+You can check whether R can access the token with
+
+``` r
+
+Sys.getenv("GITHUB_PAT")
+```
+
+**3. Install the package from GitHub** Install `pak` if necessary:
+
+``` r
+
+# during installation: plz update all packages!!!
+install.packages("pak")
+options(pkg.build_vignettes = TRUE) # important to build the vignette
+pak::pkg_install("bips-hb/APTS_Causal_Inference")
+```
+
+**4. Load the package**
+
+``` r
+
+# load package
+library(APTSCausalInference)
+
+# Load the example data
+data(bcrot)
+```
+
+------------------------------------------------------------------------
+
+### **Scenario 2: You do NOT have a GitHub account**
+
+If you do not have a GitHub account, you can **download** and install
+the package manually. You do not need a GitHub account or a Personal
+Access Token for this approach and it works on Windows, macOS, and
+Linux.
+
+**1. Download the package** + Go to the package’s GitHub page. + **Click
+Code → Download ZIP**. + Unzip the downloaded folder to a location of
+your choice.
+
+**2. Install the package from the downloaded folder**
+
+The easiest option is to install the package directly from the folder:
+
+``` r
+
+install.packages("pak")
+options(pkg.build_vignettes = TRUE)   # important to build the vignette
+pak::local_install("path/to/test")
+```
+
+**Replace** `path/to/test` with the location of the file
+`APTSCausalInference_1.1.0.tar.gz` on your computer.
+
+``` r
+
+pak::local_install("path/to/APTS_Causal_Inference/APTSCausalInference_1.1.0.tar.gz")
+```
+
+**4. Load the package**
+
+``` r
+
+# load package
+library(APTSCausalInference)
+
+# Load the example data
+data(bcrot)
+```
