@@ -5,9 +5,9 @@ url: https://bips-hb.github.io/APTS_Causal_Inference/
 template:
   bootstrap: 5
 
-articles:
-  - title: "Articles"
-    contents:
-      - installation
-      - commands
-      - practicals
+# articles:
+#   - title: "Articles"
+#     contents:
+#       - installation
+#       - commands
+#       - practicals

@@ -24,7 +24,7 @@ https://bips-hb.github.io/APTS_Causal_Inference/articles/installation.html
 
 
 ## **Code Snippets**
-Visit https://bips-hb.github.io/APTS_Causal_Inference/articles/Commands.html
+Visit https://bips-hb.github.io/APTS_Causal_Inference/articles/commands.html
 for a collection of handy code snippets. These are typical R commands for conducting causal inference.
 They help solving the practical exercises in this course and 
 support understanding and application of the discussed methods.
